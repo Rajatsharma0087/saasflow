@@ -38,8 +38,12 @@ export default function DashboardPage() {
   }, [supabase, router])
 
   const handleUpgrade = () => {
-    // Replace with YOUR actual Lemon Squeezy link
-    const checkoutUrl = `https://saasflow.lemonsqueezy.com/checkout/buy/your-id?checkout[custom][user_id]=${user?.id}&checkout[email]=${user?.email}`
+    // UPDATED: Using your real Lemon Squeezy link
+    const baseLink = "https://saasflow-app.lemonsqueezy.com/checkout/buy/fd0bbdb1-4a78-498f-9510-31066cb347c0"
+    
+    // We attach the user info securely so the webhook can upgrade the right person
+    const checkoutUrl = `${baseLink}?checkout[custom][user_id]=${user?.id}&checkout[email]=${user?.email}`
+    
     window.location.assign(checkoutUrl)
   }
 
@@ -68,7 +72,6 @@ export default function DashboardPage() {
           </div>
           
           <div className="flex items-center gap-3">
-            {/* 1. SHOW UPGRADE BUTTON ONLY IF STATUS IS 'FREE' */}
             {status === 'free' && (
               <Button onClick={handleUpgrade} className="bg-amber-500 hover:bg-amber-600 text-white cursor-pointer shadow-sm">
                 ⭐ Upgrade to Pro ($49)
@@ -96,16 +99,15 @@ export default function DashboardPage() {
             </Button>
           </div>
           {roadmap && (
-            <div className="mt-8 p-6 bg-slate-50 rounded-xl border border-slate-200 whitespace-pre-wrap text-slate-700 font-medium">
+            <div className="mt-8 p-6 bg-slate-50 rounded-xl border border-slate-200 whitespace-pre-wrap text-slate-700 font-medium italic">
               {roadmap}
             </div>
           )}
         </div>
 
-        {/* 2. FREE LIMIT MESSAGE */}
         {status === 'free' && (
           <div className="text-center p-6 bg-blue-50 rounded-2xl border border-blue-100">
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-blue-800 font-medium">
               You are using the <strong>Free Plan</strong>. Upgrade to Pro for unlimited AI and priority processing.
             </p>
           </div>
