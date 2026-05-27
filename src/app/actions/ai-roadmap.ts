@@ -1,24 +1,19 @@
 'use server'
+import { Groq } from "groq-sdk";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function generateRoadmap(projectTitle: string) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    
-    const prompt = `Act as a professional project manager. 
-    Provide a 5-step roadmap for a project named: "${projectTitle}". 
-    Keep each step short and professional. 
-    Return the result as a simple list.`;
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "user", content: `Provide a 5-step roadmap for: ${projectTitle}` }],
+      model: "llama-3.3-70b-versatile", 
+    });
 
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    return response.text();
-  } catch {
-    // SECURITY: We catch the error without creating an unused variable
-    // This satisfies the ESLint rule while keeping the app from crashing
-    return "AI is temporarily busy. Please try again in a moment.";
+    return chatCompletion.choices[0]?.message?.content || "";
+  } catch (error) {
+    // This part fixes the ESLint error by checking if 'error' is an actual Error object
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return `AI Error: ${errorMessage}`;
   }
 }
